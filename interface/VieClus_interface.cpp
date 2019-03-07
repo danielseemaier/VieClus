@@ -28,6 +28,7 @@ static double _run(const Graph &graph, PartitionConfig &partition_config, int *o
 
 __attribute__((visibility("default"))) void setup(int *argc, char ***argv) {
 	MPI_Init(argc, argv);
+	omp_set_num_threads(1);
 }
 
 __attribute__((visibility("default"))) double run_default(Graph graph, int time_limit, int seed, int *out_k, int *out_partition_map) {
@@ -72,9 +73,11 @@ __attribute__((visibility("default"))) void teardown() {
 
 static double _run(const Graph &graph, PartitionConfig &partition_config, int *out_k, int *out_partition_map) {
 	graph_access G;
-	G.build_from_metis(graph.n, graph.xadj, graph.adjncy);
-
-	omp_set_num_threads(1);
+	if (graph.vwgt == nullptr || graph.adjwgt == nullptr) {
+		G.build_from_metis(graph.n, graph.xadj, graph.adjncy);
+	} else {
+		G.build_from_metis_weighted(graph.n, graph.xadj, graph.adjncy, graph.vwgt, graph.adjwgt);
+	}
 
 	parallel_mh_async_clustering mh;
 	mh.perform_partitioning(partition_config, G);

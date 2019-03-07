@@ -7,6 +7,8 @@ struct Graph {
 	int n;
 	int *xadj;
 	int *adjncy;
+	int *vwgt;
+	int *adjwgt;
 };
 
 __attribute__((visibility("default"))) void setup(int *argc, char ***argv);

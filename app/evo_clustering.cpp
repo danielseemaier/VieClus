@@ -49,7 +49,7 @@ int main(int argn, char **argv) {
         std::string graph_filename;
         bool is_graph_weighted = false;
         bool suppress_output   = false;
-        bool recursive         = false;
+        bool recugit statrsive         = false;
 
         int ret_code = parse_parameters(argn, argv, 
                         partition_config, graph_filename, 
