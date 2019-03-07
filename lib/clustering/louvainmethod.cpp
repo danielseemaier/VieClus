@@ -83,7 +83,7 @@ PartitionID LouvainMethod::performClusteringWithLPP(const PartitionConfig& confi
     //  1. Assign node to cluster, where the most neighbors belong to.
     //  2. Aggregate nodes of same cluster to single node in new cluster.
     //     Build coarse graph in which nodes represent clusters
-    for (unsigned i = 0; i < config.lm_number_of_label_propagation_levels; ++i)
+    for (unsigned i = 0; i < config.lm_number_of_label_propagation_levels && !config.bcc_no_lp; ++i)
     {
         timer.restart();
         // initialize each node as own cluster
@@ -146,14 +146,14 @@ PartitionID LouvainMethod::performClusteringWithLPP(const PartitionConfig& confi
 
         // phase 2: contract nodes/clusters
         // only when there was a move we contract
-        if (numberOfMoves)
+        if (numberOfMoves && !config.bcc_shallow_coarsening)
         {
             m_G = Coarsening::performCoarsening(config, *m_G, graphHierarchy, coarseGraphsToDelete);
             coarsenings++;
 
         }
     }
-    while (numberOfMoves);
+    while (numberOfMoves && !config.bcc_shallow_coarsening);
 
     // append the last created level
     // this is also done in KaHIP

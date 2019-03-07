@@ -11,6 +11,10 @@ struct Graph {
 
 __attribute__((visibility("default"))) double run_default(Graph graph, int time_limit, int *out_k, int *out_partition_map);
 
+__attribute__((visibility("default"))) double run_shallow(Graph graph, int time_limit, int *out_k, int *out_partition_map);
+
+__attribute__((visibility("default"))) double run_shallow_no_lp(Graph graph, int time_limit, int *out_k, int *out_partition_map);
+
 }
 
 #endif // VIECLUS_VIECLUS_H

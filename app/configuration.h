@@ -500,7 +500,8 @@ inline void configuration::standard( PartitionConfig & partition_config ) {
         partition_config.distances.push_back(10);
         partition_config.distances.push_back(100);
 
-
+        partition_config.bcc_no_lp = false;
+        partition_config.bcc_shallow_coarsening = false;
 
 }
 

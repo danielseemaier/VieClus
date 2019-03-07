@@ -444,6 +444,9 @@ struct PartitionConfig
 
         double mh_mutate_fraction;
 
+        bool bcc_shallow_coarsening;
+        bool bcc_no_lp;
+
 };
 
 
