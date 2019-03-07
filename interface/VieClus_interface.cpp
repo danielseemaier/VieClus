@@ -26,6 +26,10 @@ namespace VieClus {
 
 static double _run(const Graph &graph, PartitionConfig &partition_config, int *out_k, int *out_partition_map);
 
+__attribute__((visibility("default"))) void setup(int *argc, char ***argv) {
+	MPI_Init(argc, argv);
+}
+
 __attribute__((visibility("default"))) double run_default(Graph graph, int time_limit, int seed, int *out_k, int *out_partition_map) {
 	PartitionConfig partition_config;
 	configuration cfg;
@@ -62,9 +66,11 @@ __attribute__((visibility("default"))) double run_shallow_no_lp(Graph graph, int
 	return _run(graph, partition_config, out_k, out_partition_map);
 }
 
-static double _run(const Graph &graph, PartitionConfig &partition_config, int *out_k, int *out_partition_map) {
-	MPI_Init(nullptr, nullptr);
+__attribute__((visibility("default"))) void teardown() {
+	MPI_Finalize();
+}
 
+static double _run(const Graph &graph, PartitionConfig &partition_config, int *out_k, int *out_partition_map) {
 	graph_access G;
 	G.build_from_metis(graph.n, graph.xadj, graph.adjncy);
 
@@ -81,8 +87,6 @@ static double _run(const Graph &graph, PartitionConfig &partition_config, int *o
 			out_partition_map[v] = G.getPartitionIndex(v);
 		}
 	}
-
-	MPI_Finalize();
 
 	return ModularityMetric::computeModularity(G);
 }
