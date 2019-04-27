@@ -446,7 +446,7 @@ struct PartitionConfig
 
         bool bcc_shallow_coarsening;
         bool bcc_no_lp;
-
+        bool bcc_start_w_singletons;
 };
 
 

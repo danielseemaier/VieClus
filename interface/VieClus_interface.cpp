@@ -72,6 +72,7 @@ __attribute__((visibility("default"))) void teardown() {
 }
 
 static double _run(const Graph &graph, PartitionConfig &partition_config, int *out_k, int *out_partition_map) {
+    // prepare graph from Graph data structure
 	graph_access G;
 	if (graph.vwgt == nullptr || graph.adjwgt == nullptr) {
 		G.build_from_metis(graph.n, graph.xadj, graph.adjncy);
@@ -79,11 +80,23 @@ static double _run(const Graph &graph, PartitionConfig &partition_config, int *o
 		G.build_from_metis_weighted(graph.n, graph.xadj, graph.adjncy, graph.vwgt, graph.adjwgt);
 	}
 
+	double initial_modularity = 0.0;
+    if (graph.clustering != nullptr) {
+        for (NodeID v = 0; v < G.number_of_nodes(); ++v) {
+            G.setPartitionIndex(v, graph.clustering[v]);
+        }
+        G.set_partition_count(G.get_partition_count_compute());
+        partition_config.bcc_start_w_singletons = false;
+
+        initial_modularity = ModularityMetric::computeModularity(G);
+    }
+
+    // run VieClus clustering algorithm
 	parallel_mh_async_clustering mh;
 	mh.perform_partitioning(partition_config, G);
 
+	// write results to output parameters
 	G.set_partition_count(G.get_partition_count_compute());
-
 	if (out_k != nullptr) *out_k = G.get_partition_count();
 	if (out_partition_map != nullptr) {
 		for (NodeID v = 0; v < G.number_of_nodes(); ++v) {
@@ -91,7 +104,15 @@ static double _run(const Graph &graph, PartitionConfig &partition_config, int *o
 		}
 	}
 
-	return ModularityMetric::computeModularity(G);
+	double final_modularity = ModularityMetric::computeModularity(G);
+	if (graph.clustering == nullptr) {
+	    std::cout << "[BCCInfo] Started with a singleton clustering" << std::endl;
+	    std::cout << "[BCC] final_modularity=" << final_modularity << std::endl;
+	} else {
+	    std::cout << "[BCCInfo] Improved a given clustering" << std::endl;
+	    std::cout << "[BCC] initial_modularity=" << initial_modularity << "; final_modularity=" << final_modularity << std::endl;
+	}
+	return final_modularity;
 }
 
 }

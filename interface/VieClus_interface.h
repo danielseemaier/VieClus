@@ -9,6 +9,7 @@ struct Graph {
 	int *adjncy;
 	int *vwgt;
 	int *adjwgt;
+	int *clustering; // Nullable
 };
 
 __attribute__((visibility("default"))) void setup(int *argc, char ***argv);

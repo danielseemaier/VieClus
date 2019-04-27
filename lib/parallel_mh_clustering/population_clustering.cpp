@@ -89,7 +89,7 @@ void population_clustering::createIndividuum(const PartitionConfig & config,
         if( lp_levels == 10) 
                 copy.lm_number_of_label_propagation_levels = 3; 
 
-        LouvainMethod{}.performClustering(copy, &G, true);
+        LouvainMethod{}.performClustering(copy, &G, config.bcc_start_w_singletons);
 
         int* partition_map = new int[G.number_of_nodes()];
         forall_nodes(G, node) {
