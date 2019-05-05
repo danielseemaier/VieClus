@@ -503,6 +503,7 @@ inline void configuration::standard( PartitionConfig & partition_config ) {
         partition_config.bcc_no_lp = false;
         partition_config.bcc_shallow_coarsening = false;
         partition_config.bcc_start_w_singletons = true;
+        partition_config.bcc_max_lv_iterations = 0;
 
 }
 

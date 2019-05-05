@@ -31,7 +31,7 @@ __attribute__((visibility("default"))) void setup(int *argc, char ***argv) {
 	omp_set_num_threads(1);
 }
 
-__attribute__((visibility("default"))) double run_default(Graph graph, int time_limit, int seed, int *out_k, int *out_partition_map) {
+__attribute__((visibility("default"))) double run_default(Graph graph, int time_limit, int max_lv_iterations, int seed, int *out_k, int *out_partition_map) {
 	PartitionConfig partition_config;
 	configuration cfg;
 	cfg.standard(partition_config);
@@ -39,10 +39,11 @@ __attribute__((visibility("default"))) double run_default(Graph graph, int time_
 	partition_config.seed = seed;
 	partition_config.time_limit = time_limit;
 	partition_config.k = 1;
+	partition_config.bcc_max_lv_iterations = max_lv_iterations;
 	return _run(graph, partition_config, out_k, out_partition_map);
 }
 
-__attribute__((visibility("default"))) double run_shallow(Graph graph, int time_limit, int seed, int *out_k, int *out_partition_map) {
+__attribute__((visibility("default"))) double run_shallow(Graph graph, int time_limit, int max_lv_iterations, int seed, int *out_k, int *out_partition_map) {
 	PartitionConfig partition_config;
 	configuration cfg;
 	cfg.standard(partition_config);
@@ -51,10 +52,11 @@ __attribute__((visibility("default"))) double run_shallow(Graph graph, int time_
 	partition_config.time_limit = time_limit;
 	partition_config.k = 1;
 	partition_config.bcc_shallow_coarsening = true;
+  partition_config.bcc_max_lv_iterations = max_lv_iterations;
 	return _run(graph, partition_config, out_k, out_partition_map);
 }
 
-__attribute__((visibility("default"))) double run_shallow_no_lp(Graph graph, int time_limit, int seed, int *out_k, int *out_partition_map) {
+__attribute__((visibility("default"))) double run_shallow_no_lp(Graph graph, int time_limit, int max_lv_iterations, int seed, int *out_k, int *out_partition_map) {
 	PartitionConfig partition_config;
 	configuration cfg;
 	cfg.standard(partition_config);
@@ -64,6 +66,7 @@ __attribute__((visibility("default"))) double run_shallow_no_lp(Graph graph, int
 	partition_config.k = 1;
 	partition_config.bcc_shallow_coarsening = true;
 	partition_config.bcc_no_lp = true;
+  partition_config.bcc_max_lv_iterations = max_lv_iterations;
 	return _run(graph, partition_config, out_k, out_partition_map);
 }
 

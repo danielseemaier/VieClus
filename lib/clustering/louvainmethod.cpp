@@ -243,6 +243,7 @@ NodeID LouvainMethod::performNodeMoves(const PartitionConfig &config)
     /// info about neighboring clusters of the currently traversed node
     Neighborhood neighborhood;
     /// for measuring time
+    timer totalTimer;
     timer timer;
 
     // the permutation vector may not be larger than the number of nodes
@@ -270,6 +271,8 @@ NodeID LouvainMethod::performNodeMoves(const PartitionConfig &config)
     // the current clustering in the current graph
     objective = new ModularityMetric(*m_G);
     currentQuality = objective->quality();
+    int numIteration = 0;
+    bool stop = false;
 
 
     // phase 1: maximize modularity by assigning nodes to new clusters
@@ -350,8 +353,19 @@ NodeID LouvainMethod::performNodeMoves(const PartitionConfig &config)
         } endfor
 
         currentQuality = objective->quality();
+        ++numIteration;
+        stop = (numIteration == config.bcc_max_lv_iterations)
+            || !(currentQuality - oldQuality > config.lm_minimum_quality_improvement);
     }
-    while (currentQuality - oldQuality > config.lm_minimum_quality_improvement);
+    while (!stop);
+    std::cout << "[BCCInfo] Stopped LV after " << numIteration
+              << " iterations (bcc_max_lv_iterations=" << config.bcc_max_lv_iterations << ") ";
+    if (numIteration == config.bcc_max_lv_iterations) std::cout << "due to iteration limit" << std::endl;
+    if (!(currentQuality - oldQuality > config.lm_minimum_quality_improvement))
+        std::cout << "due to convergence criterate: "
+                  << "currentQuality - oldQuality = " << currentQuality - oldQuality
+                  << ", but minimumQualityImprovement = " << config.lm_minimum_quality_improvement << std::endl;
+    std::cout << "[BCC] time(nodeMoves)=" << totalTimer.elapsed() << std::endl;
 
     delete objective;
 
