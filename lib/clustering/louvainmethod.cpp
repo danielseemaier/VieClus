@@ -274,6 +274,12 @@ NodeID LouvainMethod::performNodeMoves(const PartitionConfig &config)
     int numIteration = 0;
     bool stop = false;
 
+    std::vector<unsigned int> cluster_sizes(m_G->number_of_nodes());
+    for (NodeID u = 0; u < m_G->number_of_nodes(); ++u) {
+        cluster_sizes[u] = m_G->getNodeWeight(u);
+    }
+    unsigned int upper_bound = config.bcc_upper_cluster_weight;
+    if (upper_bound == 0) upper_bound = std::numeric_limits<unsigned int>::max();
 
     // phase 1: maximize modularity by assigning nodes to new clusters
     // as long as there is a (minimum) improvement
@@ -334,7 +340,7 @@ NodeID LouvainMethod::performNodeMoves(const PartitionConfig &config)
                     // the gain is not normalized, it is not the real improvement
                     double gain = objective->gain(node, newCluster, neighborhood.getEdgeWeightToNeighboringCluster(newCluster));
 
-                    if (bestGain < gain)
+                    if (bestGain < gain && cluster_sizes[newCluster] + m_G->getNodeWeight(node) < upper_bound)
                     {
                         bestGain = gain;
                         bestCluster = newCluster;
@@ -348,6 +354,8 @@ NodeID LouvainMethod::performNodeMoves(const PartitionConfig &config)
                 if (oldCluster != bestCluster)
                 {
                     numberOfMoves++;
+                    cluster_sizes[oldCluster] -= m_G->getNodeWeight(node);
+                    cluster_sizes[bestCluster] += m_G->getNodeWeight(node);
                 }
             }
         } endfor

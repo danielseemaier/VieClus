@@ -40,6 +40,7 @@ __attribute__((visibility("default"))) double run_default(Graph graph, int time_
 	partition_config.time_limit = time_limit;
 	partition_config.k = 1;
 	partition_config.bcc_max_lv_iterations = max_lv_iterations;
+	partition_config.bcc_upper_cluster_weight = 0;
 	return _run(graph, partition_config, out_k, out_partition_map);
 }
 
@@ -53,6 +54,7 @@ __attribute__((visibility("default"))) double run_shallow(Graph graph, int time_
 	partition_config.k = 1;
 	partition_config.bcc_shallow_coarsening = true;
   partition_config.bcc_max_lv_iterations = max_lv_iterations;
+  partition_config.bcc_upper_cluster_weight = 0;
 	return _run(graph, partition_config, out_k, out_partition_map);
 }
 
@@ -67,7 +69,23 @@ __attribute__((visibility("default"))) double run_shallow_no_lp(Graph graph, int
 	partition_config.bcc_shallow_coarsening = true;
 	partition_config.bcc_no_lp = true;
   partition_config.bcc_max_lv_iterations = max_lv_iterations;
+  partition_config.bcc_upper_cluster_weight = 0;
 	return _run(graph, partition_config, out_k, out_partition_map);
+}
+
+__attribute__((visibility("default"))) double run_shallow_no_lp_size_constrained(Graph graph, int time_limit, int max_lv_iterations, unsigned int upper_cluster_weight, int seed, int *out_k, int *out_partition_map) {
+  PartitionConfig partition_config;
+  configuration cfg;
+  cfg.standard(partition_config);
+  cfg.strong(partition_config);
+  partition_config.seed = seed;
+  partition_config.time_limit = time_limit;
+  partition_config.k = 1;
+  partition_config.bcc_shallow_coarsening = true;
+  partition_config.bcc_no_lp = true;
+  partition_config.bcc_max_lv_iterations = max_lv_iterations;
+  partition_config.bcc_upper_cluster_weight = upper_cluster_weight;
+  return _run(graph, partition_config, out_k, out_partition_map);
 }
 
 __attribute__((visibility("default"))) void teardown() {

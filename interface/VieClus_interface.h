@@ -37,6 +37,8 @@ __attribute__((visibility("default"))) double run_shallow(Graph graph, int time_
 
 __attribute__((visibility("default"))) double run_shallow_no_lp(Graph graph, int time_limit, int max_lv_iterations, int seed, int *out_k, int *out_partition_map);
 
+__attribute__((visibility("default"))) double run_shallow_no_lp_size_constrained(Graph graph, int time_limit, int max_lv_iterations, unsigned int upper_cluster_weight, int seed, int *out_k, int *out_partition_map);
+
 //! Must be the last call to VieClus, finalizes MPI
 __attribute__((visibility("default"))) void teardown();
 
